@@ -47,6 +47,11 @@ async def index() -> FileResponse:
     return FileResponse(static_dir / "mvp.html")
 
 
+@router.get("/api-help", include_in_schema=False)
+async def api_help() -> FileResponse:
+    return FileResponse(static_dir / "api-help.html")
+
+
 @router.post("/convert/doc-to-pdf", response_model=ConversionResponse, dependencies=[Depends(require_token)])
 async def convert_doc_to_pdf(request: ConversionRequest) -> ConversionResponse:
     return await service.convert_doc_to_pdf(request)

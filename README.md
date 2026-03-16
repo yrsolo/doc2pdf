@@ -54,6 +54,11 @@ This avoids Serverless Container request body limits because the file bypasses t
 - [System architecture](./docs/system/architecture.md)
 - [Runtime notes](./docs/system/runtime.md)
 
+Built-in runtime docs:
+- `/api-help` - lightweight HTML reference served by the app itself
+- `/docs` - Swagger UI generated from OpenAPI
+- `/redoc` - ReDoc generated from OpenAPI
+
 ## Configuration split
 - `config/` contains non-secret settings and checked-in templates.
 - `.env` is for local secrets and machine-specific overrides only.

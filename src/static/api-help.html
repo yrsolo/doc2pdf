@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>doc2pdf API Help</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f141b;
+      --panel: #151d27;
+      --panel-2: #1b2430;
+      --border: #2a3443;
+      --text: #eef3f8;
+      --muted: #9caabd;
+      --accent: #7dd3fc;
+      --accent-2: #38bdf8;
+      --ok: #34d399;
+      --warn: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(52, 211, 153, 0.08), transparent 24%),
+        var(--bg);
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero, .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.26);
+    }
+
+    .hero {
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(125, 211, 252, 0.25);
+      background: rgba(125, 211, 252, 0.08);
+      color: var(--accent);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 12px;
+    }
+
+    p, li {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .endpoint {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .method {
+      min-width: 58px;
+      text-align: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(52, 211, 153, 0.1);
+      color: var(--ok);
+      font-size: 12px;
+    }
+
+    .method.post {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warn);
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #dbe8f5;
+      font-size: 13px;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    @media (max-width: 960px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="pill">Built-in API Help</div>
+      <h1>doc2pdf API reference</h1>
+      <p>This page is served directly by the running service. Use it as a quick reference for available endpoints, payloads, and supported flows.</p>
+      <p>Also available: <a href="/docs">OpenAPI Swagger UI</a> and <a href="/redoc">ReDoc</a>.</p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="endpoint"><span class="method">GET</span><code>/healthz</code></div>
+        <p>Basic liveness check.</p>
+<pre>{
+  "status": "ok",
+  "gotenberg_base_url": "http://127.0.0.1:3000"
+}</pre>
+      </article>
+
+      <article class="card">
+        <div class="endpoint"><span class="method post">POST</span><code>/convert/doc-to-pdf</code></div>
+        <p>Stable backend-facing conversion endpoint. Requires <code>X-Shared-Token</code>.</p>
+<pre>{
+  "attachment_id": "att_123",
+  "source_url": "https://storage.example/source.doc",
+  "target_url": "https://storage.example/preview.pdf",
+  "source_filename": "legacy.doc",
+  "target_filename": "preview.pdf",
+  "request_id": "req-001"
+}</pre>
+        <p>Response:</p>
+<pre>{
+  "status": "ready",
+  "attachment_id": "att_123",
+  "preview_mime": "application/pdf",
+  "preview_size_bytes": 123456,
+  "error_code": null,
+  "error_message": null
+}</pre>
+      </article>
+
+      <article class="card">
+        <div class="endpoint"><span class="method post">POST</span><code>/mvp/prepare-upload</code></div>
+        <p>Hosted-upload preparation for browser clients without their own storage.</p>
+<pre>{
+  "filename": "legacy.doc",
+  "content_type": "application/msword"
+}</pre>
+        <p>Response includes direct upload URL, upload headers, preview URL, and opaque conversion token.</p>
+      </article>
+
+      <article class="card">
+        <div class="endpoint"><span class="method post">POST</span><code>/mvp/convert</code></div>
+        <p>Finalize hosted-upload conversion after the browser uploads the source directly to Object Storage.</p>
+<pre>{
+  "conversion_token": "opaque-short-lived-token"
+}</pre>
+        <p>Response shape matches the MVP upload response and includes <code>preview_url</code> on success.</p>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>Supported flows</h2>
+      <h3>Bring your own storage</h3>
+      <ol>
+        <li>Client prepares presigned <code>source_url</code>.</li>
+        <li>Client prepares presigned <code>target_url</code>.</li>
+        <li>Client calls <code>POST /convert/doc-to-pdf</code>.</li>
+      </ol>
+
+      <h3>Hosted upload</h3>
+      <ol>
+        <li>Client calls <code>POST /mvp/prepare-upload</code>.</li>
+        <li>Client uploads the document directly to Object Storage.</li>
+        <li>Client calls <code>POST /mvp/convert</code>.</li>
+        <li>Client opens <code>preview_url</code>.</li>
+      </ol>
+    </section>
+  </div>
+</body>
+</html>

@@ -31,8 +31,8 @@
    - `SHARED_TOKEN`
    - Object Storage credentials and bucket settings
 
-## Current cloud endpoint
-- Serverless Container URL: `https://bbat6ekvbh9f5sj60k2b.containers.yandexcloud.net/`
+## Cloud endpoint shape
+- Serverless Container URL: `https://<your-container-id>.containers.yandexcloud.net/`
 
 ## External browser MVP prerequisites
 - The container must allow unauthenticated invoke, or be fronted by an ingress/auth layer that a browser client can use.

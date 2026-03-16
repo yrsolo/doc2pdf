@@ -10,10 +10,16 @@ Local:
 http://localhost:8080
 ```
 
-Current Yandex Serverless Container URL:
+Cloud:
 
 ```text
-https://bbat6ekvbh9f5sj60k2b.containers.yandexcloud.net
+https://<your-container-id>.containers.yandexcloud.net
+```
+
+Built-in help page exposed by the running service:
+
+```text
+<base-url>/api-help
 ```
 
 ## Auth

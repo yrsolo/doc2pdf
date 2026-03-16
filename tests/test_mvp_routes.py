@@ -12,6 +12,14 @@ def test_root_serves_mvp_page():
     assert "doc2pdf test client" in response.text
 
 
+def test_api_help_serves_reference_page():
+    client = TestClient(app)
+    response = client.get("/api-help")
+
+    assert response.status_code == 200
+    assert "doc2pdf API reference" in response.text
+
+
 def test_mvp_prepare_upload_returns_upload_session(monkeypatch):
     client = TestClient(app)
 
