@@ -7,7 +7,7 @@ In Progress
 Converter service
 
 ## Goal
-Stand up an independent microservice repository for DTM document preview conversion using Gotenberg as the primary engine.
+Stand up an independent microservice repository for DTM document preview conversion using Gotenberg as the primary engine, while proving real legacy `.doc` conversion without drifting away from the intended service API.
 
 ## Why
 Legacy `.doc` preview conversion should be isolated from the main DTM backend:
@@ -23,6 +23,8 @@ Legacy `.doc` preview conversion should be isolated from the main DTM backend:
 - conversion endpoint contract
 - Dockerfile
 - local docker-compose with Gotenberg
+- dev-only local smoke tooling for real-file conversion proof
+- evidence capture for real `.doc` outcomes
 - CI image build workflow
 - Yandex Serverless Container deploy workflow
 - system and interface docs
@@ -33,6 +35,7 @@ Legacy `.doc` preview conversion should be isolated from the main DTM backend:
 - frontend integration
 - direct storage event triggers
 - retries and queue ownership
+- temporary multipart/local-first public API
 - full production hardening
 
 ## Done when
@@ -40,5 +43,7 @@ Legacy `.doc` preview conversion should be isolated from the main DTM backend:
 2. Local stack starts with wrapper + Gotenberg.
 3. Health endpoint works.
 4. Conversion endpoint contract is frozen.
-5. Container build workflow exists.
-6. Deploy workflow for Yandex Serverless Container exists.
+5. Local smoke workflow proves at least one real `.doc` conversion path without changing the public API.
+6. Real-file evidence is captured with outcome and caveats.
+7. Container build workflow exists.
+8. Deploy workflow for Yandex Serverless Container exists.

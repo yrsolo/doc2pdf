@@ -31,6 +31,21 @@ This repo contains an independently deployable converter carrier so the main DTM
 - `config/` contains non-secret settings and checked-in templates.
 - `.env` is for local secrets and machine-specific overrides only.
 
+## Local Proof Workflow
+The public API stays aligned with the future backend integration shape. For early carrier proof on a real legacy file, use a dev-only smoke script instead of adding a temporary multipart endpoint.
+
+Local proof inputs:
+- `example/example.doc` is a temporary local sample only
+- it is not treated as a permanent CI fixture
+- it should later be replaced by a safe anonymized fixture or by a documented local sample drop-in flow
+
+Local proof steps:
+1. Start Gotenberg locally with `docker compose up gotenberg`.
+2. Run `python scripts/smoke_local_conversion.py --input example/example.doc`.
+3. Review the generated PDF and captured evidence under `work/roadmap/campaigns/CAM-2026-03-16-GOTENBERG-CONVERTER-MVP-V1/evidence/`.
+
+This smoke flow is for local engine validation only. It does not define the service's stable API.
+
 ## MVP
 The current skeleton is intentionally thin:
 - a small FastAPI wrapper;

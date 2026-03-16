@@ -18,6 +18,13 @@ Required environment variables:
 Optional:
 - `GOTENBERG_TIMEOUT_SEC`
 
+## Local proof tooling
+The repo may include dev-only smoke tooling for local conversion proof against Gotenberg.
+That tooling is not part of the stable HTTP API contract and must not be treated as an integration surface for DTM backend.
+
+Tracked non-secret defaults belong in `config/`.
+Secrets and machine-specific overrides belong in local `.env` files.
+
 ## Deployment assumptions
 - image is stored in Yandex Container Registry
 - service is exposed only to trusted internal callers

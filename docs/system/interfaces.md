@@ -7,6 +7,10 @@ Trusted DTM backend or internal worker only.
 MVP uses a simple shared token via `X-Shared-Token`.
 This can later be replaced by IAM/private ingress policy.
 
+## Contract stability
+This interface is the stable converter service contract for future backend integration.
+Local smoke or proof-of-carrier tooling must not redefine this API as multipart upload or local-output semantics.
+
 ## HTTP API
 
 ### GET /healthz
