@@ -23,8 +23,7 @@ COPY src ./src
 COPY scripts ./scripts
 COPY docker ./docker
 
-RUN chmod +x /app/docker/entrypoint.sh \
-    && chown -R gotenberg:gotenberg /app /python-deps
+RUN chmod +x /app/docker/entrypoint.sh
 
 USER gotenberg
 
