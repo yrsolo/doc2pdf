@@ -42,7 +42,8 @@ Local proof inputs:
 Local proof steps:
 1. Start Gotenberg locally with `docker compose up gotenberg`.
 2. Run `python scripts/smoke_local_conversion.py --input example/example.doc`.
-3. Review the generated PDF and captured evidence under `work/roadmap/campaigns/CAM-2026-03-16-GOTENBERG-CONVERTER-MVP-V1/evidence/`.
+3. Review the generated PDF under `example/output/`.
+4. Review the captured evidence under `work/roadmap/campaigns/CAM-2026-03-16-GOTENBERG-CONVERTER-MVP-V1/evidence/`.
 
 This smoke flow is for local engine validation only. It does not define the service's stable API.
 

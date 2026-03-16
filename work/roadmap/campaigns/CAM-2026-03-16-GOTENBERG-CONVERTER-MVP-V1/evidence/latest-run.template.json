@@ -3,7 +3,7 @@
   "source_filename": "example.doc",
   "source_path": "example/example.doc",
   "gotenberg_url": "http://localhost:3000",
-  "output_path": "work/roadmap/campaigns/CAM-2026-03-16-GOTENBERG-CONVERTER-MVP-V1/evidence/output/example-YYYYMMDDTHHMMSSZ.pdf",
+  "output_path": "example/output/example-YYYYMMDDTHHMMSSZ.pdf",
   "status": "pending",
   "output_size_bytes": null,
   "error": null,

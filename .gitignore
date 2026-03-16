@@ -13,3 +13,4 @@ htmlcov/
 .DS_Store
 work/roadmap/campaigns/CAM-2026-03-16-GOTENBERG-CONVERTER-MVP-V1/evidence/latest-run.json
 work/roadmap/campaigns/CAM-2026-03-16-GOTENBERG-CONVERTER-MVP-V1/evidence/output/
+example/output/

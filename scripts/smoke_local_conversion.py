@@ -25,10 +25,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output-dir",
-        default=(
-            "work/roadmap/campaigns/"
-            "CAM-2026-03-16-GOTENBERG-CONVERTER-MVP-V1/evidence/output"
-        ),
+        default="example/output",
         help="Directory where the generated PDF will be written.",
     )
     parser.add_argument(

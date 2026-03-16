@@ -4,7 +4,7 @@ This directory stores local proof-of-carrier evidence for the active campaign.
 
 Expected artifacts:
 - `latest-run.json` with the latest smoke conversion metadata
-- generated PDF output under `output/`
+- generated PDF output under `example/output/`
 - manual notes on rendering caveats after review
 
 Do not treat `example/example.doc` as a permanent fixture.
