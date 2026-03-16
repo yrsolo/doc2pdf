@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>doc2pdf External Test Client</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10141b;
+      --panel: #171d27;
+      --panel-2: #1d2532;
+      --border: #2a3444;
+      --text: #eff3fa;
+      --muted: #9aa7bc;
+      --accent: #5cc8ff;
+      --accent-2: #38bdf8;
+      --danger: #fb7185;
+      --ok: #34d399;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(92, 200, 255, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(52, 211, 153, 0.08), transparent 25%),
+        var(--bg);
+    }
+
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+      overflow: hidden;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    h1, h2 {
+      margin: 0 0 12px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(92, 200, 255, 0.28);
+      background: rgba(92, 200, 255, 0.08);
+      color: var(--accent);
+      font-size: 13px;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #07131c;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .meta {
+      margin-top: 16px;
+      display: grid;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 90px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status.ok {
+      color: var(--ok);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .status.error {
+      color: var(--danger);
+      background: rgba(251, 113, 133, 0.08);
+    }
+
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .frame {
+      width: 100%;
+      min-height: 720px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #0b0f15;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      min-height: 720px;
+      padding: 24px;
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+      color: var(--muted);
+    }
+
+    .log {
+      margin-top: 18px;
+      min-height: 140px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(0,0,0,0.2);
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 980px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="card panel">
+      <div class="pill">External MVP Test Client</div>
+      <h1>doc2pdf outside check</h1>
+      <p>Эту страницу можно открывать отдельно от сервиса и проверять конвертацию снаружи через browser upload.</p>
+
+      <label for="baseUrl">Base URL сервиса</label>
+      <input id="baseUrl" type="text" value="http://localhost:8080" />
+
+      <label for="fileInput">Файл `.doc` или `.docx`</label>
+      <input id="fileInput" type="file" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+
+      <button id="submitButton">Загрузить и конвертировать</button>
+
+      <div class="meta">
+        <div id="fileMeta">Файл не выбран</div>
+        <div id="resultMeta">Результат еще не получен</div>
+      </div>
+
+      <div id="log" class="log">Готов к внешней проверке.</div>
+    </section>
+
+    <section class="card panel">
+      <div class="preview-head">
+        <div>
+          <h2>PDF preview</h2>
+          <p>Если сервис доступен снаружи и конвертация прошла успешно, PDF откроется здесь.</p>
+        </div>
+        <div id="status" class="status">idle</div>
+      </div>
+
+      <div id="previewHost" class="empty">Выбери документ, укажи URL сервиса и запусти проверку.</div>
+    </section>
+  </div>
+
+  <script>
+    const baseUrlInput = document.getElementById("baseUrl");
+    const fileInput = document.getElementById("fileInput");
+    const submitButton = document.getElementById("submitButton");
+    const fileMeta = document.getElementById("fileMeta");
+    const resultMeta = document.getElementById("resultMeta");
+    const logEl = document.getElementById("log");
+    const statusEl = document.getElementById("status");
+    const previewHost = document.getElementById("previewHost");
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files?.[0];
+      fileMeta.textContent = file
+        ? `Выбран: ${file.name} • ${Math.round(file.size / 1024)} KB`
+        : "Файл не выбран";
+    });
+
+    submitButton.addEventListener("click", async () => {
+      const file = fileInput.files?.[0];
+      const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, "");
+
+      if (!baseUrl) {
+        return fail("Укажи base URL сервиса.");
+      }
+      if (!file) {
+        return fail("Сначала выбери документ.");
+      }
+
+      submitButton.disabled = true;
+      setStatus("working");
+      resultMeta.textContent = "Конвертация выполняется...";
+      logEl.textContent = "Отправка файла на /mvp/upload ...";
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch(`${baseUrl}/mvp/upload`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const payload = await response.json();
+        if (!response.ok || payload.status !== "ready") {
+          throw new Error(payload.error_message || payload.detail || "Конвертация не удалась");
+        }
+
+        setStatus("ready", true);
+        resultMeta.textContent = `PDF готов: ${Math.round((payload.preview_size_bytes || 0) / 1024)} KB`;
+        logEl.textContent = JSON.stringify(payload, null, 2);
+        previewHost.innerHTML = `<iframe class="frame" title="preview" src="${payload.preview_url}"></iframe>`;
+      } catch (error) {
+        fail(error.message || String(error));
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+
+    function setStatus(text, ok = false) {
+      statusEl.textContent = text;
+      statusEl.classList.remove("ok", "error");
+      if (ok) {
+        statusEl.classList.add("ok");
+      }
+    }
+
+    function fail(message) {
+      statusEl.textContent = "failed";
+      statusEl.classList.remove("ok");
+      statusEl.classList.add("error");
+      resultMeta.textContent = "Ошибка конвертации";
+      logEl.textContent = message;
+    }
+  </script>
+</body>
+</html>
