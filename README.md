@@ -46,6 +46,14 @@ This avoids Serverless Container request body limits because the file bypasses t
 - `.github/workflows/` - image build and deploy workflows.
 - `deploy/` - deployment examples and environment templates.
 
+## Documentation
+
+- [Docs index](./docs/README.md)
+- [API reference](./docs/api.md)
+- [Repository guide](./docs/repository.md)
+- [System architecture](./docs/system/architecture.md)
+- [Runtime notes](./docs/system/runtime.md)
+
 ## Configuration split
 - `config/` contains non-secret settings and checked-in templates.
 - `.env` is for local secrets and machine-specific overrides only.
