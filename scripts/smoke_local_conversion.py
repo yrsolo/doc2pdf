@@ -88,7 +88,10 @@ def main() -> int:
     }
 
     try:
-        with input_path.open("rb") as input_file, httpx.Client(timeout=args.timeout_sec) as client:
+        with input_path.open("rb") as input_file, httpx.Client(
+            timeout=args.timeout_sec,
+            trust_env=False,
+        ) as client:
             response = client.post(
                 f"{args.gotenberg_url.rstrip('/')}/forms/libreoffice/convert",
                 files={"files": (input_path.name, input_file, mime_type)},
