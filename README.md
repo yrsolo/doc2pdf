@@ -48,12 +48,19 @@ Local proof steps:
 This smoke flow is for local engine validation only. It does not define the service's stable API.
 
 ## MVP
-The current skeleton is intentionally thin:
+The current MVP stays intentionally thin:
 - a small FastAPI wrapper;
 - a Gotenberg-backed conversion adapter;
 - health endpoint;
 - conversion endpoint contract;
 - CI skeleton for image build and Yandex Serverless Container deployment.
+
+Current conversion path:
+1. Gotenberg fetches the source document from the presigned `source_url`.
+2. The wrapper receives the produced PDF from Gotenberg.
+3. The wrapper uploads the PDF to the presigned `target_url`.
+
+This keeps the stable API shape while avoiding a temporary multipart upload contract.
 
 ## Non-goals for MVP
 - multi-format rendering UI;

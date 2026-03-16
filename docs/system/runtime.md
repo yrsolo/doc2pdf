@@ -9,6 +9,13 @@ Legacy office conversion needs a containerized runtime and should stay independe
 ## External dependency
 Gotenberg is the current conversion engine.
 
+## Current execution model
+The wrapper currently performs a narrow two-step execution:
+1. ask Gotenberg to fetch and convert the source document from `source_url`
+2. upload the returned PDF to `target_url`
+
+This keeps source transfer out of the wrapper while preserving the stable backend-facing API.
+
 ## Configuration
 Required environment variables:
 - `PORT`

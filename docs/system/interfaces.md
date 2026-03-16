@@ -50,3 +50,13 @@ Response body:
   "error_message": null
 }
 ```
+
+## Current implementation note
+The stable request/response contract already matches the intended backend integration shape.
+
+The current implementation path is:
+1. Gotenberg downloads the source document from `source_url`
+2. the wrapper receives the produced PDF
+3. the wrapper uploads the PDF to `target_url`
+
+This avoids introducing a temporary multipart upload contract while keeping the service narrow.

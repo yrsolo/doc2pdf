@@ -31,9 +31,10 @@ Preferred production flow:
 1. backend generates presigned GET for source
 2. backend generates presigned PUT for target PDF
 3. backend calls `/convert/doc-to-pdf`
-4. converter delegates to Gotenberg
-5. converter returns `ready|failed`
-6. backend persists preview result
+4. converter asks Gotenberg to fetch and convert the source
+5. converter uploads the resulting PDF to target storage
+6. converter returns `ready|failed`
+7. backend persists preview result
 
 ## Why separate repo
 - independent Docker image lifecycle
