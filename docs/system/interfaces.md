@@ -61,7 +61,53 @@ The current implementation path is:
 
 This avoids introducing a temporary multipart upload contract while keeping the service narrow.
 
-## Local MVP helper
-The repo may additionally expose a local-only MVP helper flow for manual testing in a browser.
-That helper may upload a local file to Object Storage and then call the stable conversion service internally, but it is not the public integration contract for DTM backend.
-The helper is served from the same container runtime as the stable API.
+## Browser-facing MVP helper
+The repo additionally exposes a browser-facing helper flow for manual testing from inside or outside the service origin.
+It is not the public integration contract for DTM backend, but it is useful for smoke checks and external verification.
+
+### POST /mvp/prepare-upload
+Creates a hosted-upload session for a browser client.
+
+Request body:
+```json
+{
+  "filename": "legacy.doc",
+  "content_type": "application/msword"
+}
+```
+
+Response body:
+```json
+{
+  "status": "prepared",
+  "filename": "legacy.doc",
+  "source_object_key": "doc2pdf/uploads/abc-legacy.doc",
+  "preview_object_key": "doc2pdf/previews/def-legacy.pdf",
+  "upload_url": "https://storage-presigned-put.example",
+  "upload_method": "PUT",
+  "upload_headers": {
+    "Content-Type": "application/msword",
+    "Content-Disposition": "attachment; filename=\"legacy.doc\""
+  },
+  "preview_url": "https://storage-presigned-get.example",
+  "conversion_token": "opaque-short-lived-token"
+}
+```
+
+### POST /mvp/convert
+Finalizes a hosted-upload conversion after the browser has uploaded the source directly to Object Storage.
+
+Request body:
+```json
+{
+  "conversion_token": "opaque-short-lived-token"
+}
+```
+
+Response body:
+Same as `MvpUploadResponse`, including `preview_url` when conversion succeeds.
+
+### POST /mvp/upload
+Legacy multipart helper kept for local/dev convenience only.
+
+Do not use this as the primary cloud path because large uploads can hit Serverless Container request-size limits.

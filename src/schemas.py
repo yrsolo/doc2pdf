@@ -32,3 +32,24 @@ class MvpUploadResponse(BaseModel):
     preview_object_key: Optional[str] = None
     error_code: Optional[str] = None
     error_message: Optional[str] = None
+
+
+class MvpPrepareUploadRequest(BaseModel):
+    filename: str
+    content_type: Optional[str] = None
+
+
+class MvpPrepareUploadResponse(BaseModel):
+    status: Literal["prepared"]
+    filename: str
+    source_object_key: str
+    preview_object_key: str
+    upload_url: HttpUrl
+    upload_method: Literal["PUT"] = "PUT"
+    upload_headers: dict[str, str]
+    preview_url: HttpUrl
+    conversion_token: str
+
+
+class MvpConvertRequest(BaseModel):
+    conversion_token: str

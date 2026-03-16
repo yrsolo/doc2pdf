@@ -42,12 +42,32 @@ class ObjectStorageService:
         )
         return object_key, self.generate_get_url(object_key)
 
+    def prepare_source_upload(
+        self,
+        filename: str,
+        content_type: str | None = None,
+    ) -> tuple[str, str, dict[str, str]]:
+        object_key = self._build_object_key("uploads", filename)
+        effective_content_type = (
+            content_type or mimetypes.guess_type(filename)[0] or "application/octet-stream"
+        )
+        upload_headers = {
+            "Content-Type": effective_content_type,
+            "Content-Disposition": f'attachment; filename="{Path(filename).name}"',
+        }
+        put_url = self.generate_put_url(
+            object_key=object_key,
+            content_type=effective_content_type,
+            content_disposition=upload_headers["Content-Disposition"],
+        )
+        return object_key, put_url, upload_headers
+
     def prepare_preview_target(self, filename: str) -> tuple[str, str, str]:
         object_key = self._build_object_key("previews", filename, extension=".pdf")
-        put_url = self.client.generate_presigned_url(
-            ClientMethod="put_object",
-            Params={"Bucket": self.bucket, "Key": object_key},
-            ExpiresIn=self.presign_ttl_sec,
+        put_url = self.generate_put_url(
+            object_key=object_key,
+            content_type="application/pdf",
+            content_disposition=f'inline; filename="{Path(filename).stem or "preview"}.pdf"',
         )
         get_url = self.generate_get_url(object_key)
         return object_key, put_url, get_url
@@ -56,6 +76,23 @@ class ObjectStorageService:
         return self.client.generate_presigned_url(
             ClientMethod="get_object",
             Params={"Bucket": self.bucket, "Key": object_key},
+            ExpiresIn=self.presign_ttl_sec,
+        )
+
+    def generate_put_url(
+        self,
+        object_key: str,
+        content_type: str | None = None,
+        content_disposition: str | None = None,
+    ) -> str:
+        params: dict[str, str] = {"Bucket": self.bucket, "Key": object_key}
+        if content_type:
+            params["ContentType"] = content_type
+        if content_disposition:
+            params["ContentDisposition"] = content_disposition
+        return self.client.generate_presigned_url(
+            ClientMethod="put_object",
+            Params=params,
             ExpiresIn=self.presign_ttl_sec,
         )
 

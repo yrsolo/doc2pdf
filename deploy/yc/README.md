@@ -30,3 +30,16 @@
    - `GOTENBERG_BASE_URL=http://127.0.0.1:3000`
    - `SHARED_TOKEN`
    - Object Storage credentials and bucket settings
+
+## Current cloud endpoint
+- Serverless Container URL: `https://bbat6ekvbh9f5sj60k2b.containers.yandexcloud.net/`
+
+## External browser MVP prerequisites
+- The container must allow unauthenticated invoke, or be fronted by an ingress/auth layer that a browser client can use.
+- Object Storage bucket CORS must allow browser `PUT` and `GET` from the origin used by the test page, including `Content-Type` and `Content-Disposition` headers.
+- Browser uploads must use the hosted-upload flow:
+  1. `POST /mvp/prepare-upload`
+  2. direct PUT to Object Storage
+  3. `POST /mvp/convert`
+
+Do not rely on `POST /mvp/upload` in cloud for larger files, because Serverless Container ingress enforces request body limits.

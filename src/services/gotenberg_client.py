@@ -71,7 +71,10 @@ class GotenbergClient:
             return response.content
 
     async def _upload_pdf(self, request: ConversionRequest, pdf_bytes: bytes) -> None:
-        headers = {"Content-Type": "application/pdf"}
+        headers = {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": f'inline; filename="{request.target_filename}"',
+        }
         if request.request_id:
             headers["X-Request-Id"] = request.request_id
 

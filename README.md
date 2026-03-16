@@ -19,6 +19,25 @@ This repo contains an independently deployable converter carrier so the main DTM
 4. Converter instructs Gotenberg to fetch the source via presigned GET and upload result via presigned PUT.
 5. Backend updates `preview_state` / `derived_preview_ref`.
 
+## Supported client modes
+
+### Bring your own storage
+Use the stable backend-facing contract:
+- caller provides `source_url`
+- caller provides `target_url`
+- caller calls `POST /convert/doc-to-pdf`
+
+This is the intended DTM integration path.
+
+### Hosted upload
+Use the browser-facing MVP flow when the client does not own storage:
+1. call `POST /mvp/prepare-upload`
+2. upload the source document directly to Object Storage via the returned presigned PUT URL
+3. call `POST /mvp/convert` with the returned opaque conversion token
+4. open the returned `preview_url`
+
+This avoids Serverless Container request body limits because the file bypasses the container during upload.
+
 ## Repo map
 - `config/` - tracked non-secret configuration and templates.
 - `src/` - tiny wrapper service around Gotenberg.
@@ -35,11 +54,12 @@ This repo contains an independently deployable converter carrier so the main DTM
 The local developer flow is container-only. No local Python runtime is required.
 
 The MVP flow is intentionally separate from the stable backend-facing API:
-1. the browser uploads a `.doc` or `.docx` to the wrapper
-2. the wrapper stores the source file in Yandex Object Storage
-3. the wrapper generates presigned source/target URLs
-4. the stable conversion service converts via Gotenberg and uploads the PDF
-5. the page opens the resulting PDF in an embedded preview frame
+1. the browser requests `POST /mvp/prepare-upload`
+2. the wrapper returns a presigned source upload URL plus an opaque conversion token
+3. the browser uploads the source directly to Yandex Object Storage
+4. the browser calls `POST /mvp/convert`
+5. the wrapper generates internal source/target URLs, converts via Gotenberg, and uploads the PDF
+6. the page opens the resulting PDF in an embedded preview frame
 
 Required local configuration for the MVP page:
 - `AWS_ACCESS_KEY_ID`
@@ -54,6 +74,12 @@ Run locally:
 2. open `http://localhost:8080/`
 3. upload `example/example.doc` or another `.doc/.docx`
 4. verify that the embedded preview opens the resulting PDF from Object Storage
+
+External browser test page:
+- open `example/test-client.html` directly from disk
+- set the service base URL, for example `http://localhost:8080`
+- run the same direct-to-storage flow from outside the service origin
+- when testing against cloud, ensure the Object Storage bucket allows browser `PUT`/`GET` via CORS
 
 Diagnostics:
 - `docker compose logs -f app`

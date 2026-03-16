@@ -36,6 +36,13 @@ Preferred production flow:
 6. converter returns `ready|failed`
 7. backend persists preview result
 
+Hosted-upload helper flow for browser-based testing:
+1. browser requests `/mvp/prepare-upload`
+2. converter returns a presigned source upload URL and opaque conversion token
+3. browser uploads the source directly to Object Storage
+4. browser calls `/mvp/convert`
+5. converter recreates internal source/target URLs and runs the same conversion pipeline
+
 ## Runtime packaging
 The wrapper and Gotenberg are packaged into the same container image so the local Docker runtime and Yandex Serverless Container use the same deployment shape.
 

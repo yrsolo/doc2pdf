@@ -21,6 +21,7 @@ class Settings(BaseSettings):
         default=3600,
         alias="OBJECT_STORAGE_PRESIGN_TTL_SEC",
     )
+    mvp_token_ttl_sec: int = Field(default=3600, alias="MVP_TOKEN_TTL_SEC")
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

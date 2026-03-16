@@ -9,7 +9,6 @@
       color-scheme: dark;
       --bg: #10141b;
       --panel: #171d27;
-      --panel-2: #1d2532;
       --border: #2a3444;
       --text: #eff3fa;
       --muted: #9aa7bc;
@@ -168,7 +167,7 @@
 
     .log {
       margin-top: 18px;
-      min-height: 140px;
+      min-height: 180px;
       white-space: pre-wrap;
       word-break: break-word;
       padding: 16px;
@@ -192,12 +191,12 @@
     <section class="card panel">
       <div class="pill">External MVP Test Client</div>
       <h1>doc2pdf outside check</h1>
-      <p>Эту страницу можно открывать отдельно от сервиса и проверять конвертацию снаружи через browser upload.</p>
+      <p>Open this file directly from disk, point it to the service URL, and test the cloud-safe flow: prepare upload, direct PUT to Object Storage, then conversion.</p>
 
       <label for="baseUrl">Base URL сервиса</label>
       <input id="baseUrl" type="text" value="http://localhost:8080" />
 
-      <label for="fileInput">Файл `.doc` или `.docx`</label>
+      <label for="fileInput">Файл .doc или .docx</label>
       <input id="fileInput" type="file" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
 
       <button id="submitButton">Загрузить и конвертировать</button>
@@ -207,19 +206,19 @@
         <div id="resultMeta">Результат еще не получен</div>
       </div>
 
-      <div id="log" class="log">Готов к внешней проверке.</div>
+      <div id="log" class="log">Ready for external service check.</div>
     </section>
 
     <section class="card panel">
       <div class="preview-head">
         <div>
           <h2>PDF preview</h2>
-          <p>Если сервис доступен снаружи и конвертация прошла успешно, PDF откроется здесь.</p>
+          <p>If the service is reachable and conversion succeeds, the generated PDF will appear here.</p>
         </div>
         <div id="status" class="status">idle</div>
       </div>
 
-      <div id="previewHost" class="empty">Выбери документ, укажи URL сервиса и запусти проверку.</div>
+      <div id="previewHost" class="empty">Choose a document, set the service URL, and start the check.</div>
     </section>
   </div>
 
@@ -245,35 +244,75 @@
       const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, "");
 
       if (!baseUrl) {
-        return fail("Укажи base URL сервиса.");
+        return fail("Set the service Base URL first.");
       }
       if (!file) {
-        return fail("Сначала выбери документ.");
+        return fail("Choose a .doc or .docx file first.");
       }
 
       submitButton.disabled = true;
-      setStatus("working");
-      resultMeta.textContent = "Конвертация выполняется...";
-      logEl.textContent = "Отправка файла на /mvp/upload ...";
-
-      const formData = new FormData();
-      formData.append("file", file);
+      setStatus("prepare");
+      resultMeta.textContent = "Preparing upload session...";
+      logEl.textContent = "POST /mvp/prepare-upload";
 
       try {
-        const response = await fetch(`${baseUrl}/mvp/upload`, {
+        const prepareResponse = await fetch(`${baseUrl}/mvp/prepare-upload`, {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: file.name,
+            content_type: file.type || "application/octet-stream",
+          }),
         });
+        const preparePayload = await prepareResponse.json();
+        if (!prepareResponse.ok || preparePayload.status !== "prepared") {
+          throw new Error(preparePayload.detail || "prepare-upload failed");
+        }
 
-        const payload = await response.json();
-        if (!response.ok || payload.status !== "ready") {
-          throw new Error(payload.error_message || payload.detail || "Конвертация не удалась");
+        setStatus("upload");
+        resultMeta.textContent = "Uploading source to Object Storage...";
+        logEl.textContent = JSON.stringify({
+          step: "prepare-upload",
+          payload: preparePayload,
+        }, null, 2);
+
+        const uploadHeaders = new Headers(preparePayload.upload_headers || {});
+        const uploadResponse = await fetch(preparePayload.upload_url, {
+          method: preparePayload.upload_method || "PUT",
+          headers: uploadHeaders,
+          body: file,
+        });
+        if (!uploadResponse.ok) {
+          throw new Error(`upload failed with ${uploadResponse.status}`);
+        }
+
+        setStatus("convert");
+        resultMeta.textContent = "Conversion in progress...";
+        logEl.textContent = JSON.stringify({
+          step: "upload-complete",
+          source_object_key: preparePayload.source_object_key,
+          preview_object_key: preparePayload.preview_object_key,
+        }, null, 2);
+
+        const convertResponse = await fetch(`${baseUrl}/mvp/convert`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversion_token: preparePayload.conversion_token,
+          }),
+        });
+        const convertPayload = await convertResponse.json();
+        if (!convertResponse.ok || convertPayload.status !== "ready") {
+          throw new Error(convertPayload.error_message || convertPayload.detail || "convert failed");
         }
 
         setStatus("ready", true);
-        resultMeta.textContent = `PDF готов: ${Math.round((payload.preview_size_bytes || 0) / 1024)} KB`;
-        logEl.textContent = JSON.stringify(payload, null, 2);
-        previewHost.innerHTML = `<iframe class="frame" title="preview" src="${payload.preview_url}"></iframe>`;
+        resultMeta.textContent = `PDF ready: ${Math.round((convertPayload.preview_size_bytes || 0) / 1024)} KB`;
+        logEl.textContent = JSON.stringify({
+          prepare: preparePayload,
+          convert: convertPayload,
+        }, null, 2);
+        previewHost.innerHTML = `<iframe class="frame" title="preview" src="${convertPayload.preview_url}"></iframe>`;
       } catch (error) {
         fail(error.message || String(error));
       } finally {
@@ -295,6 +334,7 @@
       statusEl.classList.add("error");
       resultMeta.textContent = "Ошибка конвертации";
       logEl.textContent = message;
+      previewHost.innerHTML = `<div class="empty">Preview is unavailable until conversion succeeds.</div>`;
     }
   </script>
 </body>
