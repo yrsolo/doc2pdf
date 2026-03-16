@@ -1,0 +1,15 @@
+.git
+.github
+.env
+.env.*
+.pytest_cache
+.mypy_cache
+__pycache__
+*.pyc
+tests
+work
+example
+deploy
+config
+AGENTS.md
+README.md

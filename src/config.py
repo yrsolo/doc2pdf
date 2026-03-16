@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     port: int = Field(default=8080, alias="PORT")
-    gotenberg_base_url: str = Field(default="http://localhost:3000", alias="GOTENBERG_BASE_URL")
+    gotenberg_base_url: str = Field(default="http://127.0.0.1:3000", alias="GOTENBERG_BASE_URL")
     shared_token: str | None = Field(default=None, alias="SHARED_TOKEN")
     gotenberg_timeout_sec: int = Field(default=120, alias="GOTENBERG_TIMEOUT_SEC")
     aws_access_key_id: str | None = Field(default=None, alias="AWS_ACCESS_KEY_ID")

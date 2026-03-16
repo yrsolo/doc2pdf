@@ -1,18 +1,21 @@
-version: "3.9"
-
 services:
   app:
     build: .
+    env_file:
+      - .env
     environment:
       PORT: "8080"
-      GOTENBERG_BASE_URL: "http://gotenberg:3000"
-      SHARED_TOKEN: "local-dev-token"
+      GOTENBERG_BASE_URL: "http://127.0.0.1:3000"
+      OBJECT_STORAGE_ENDPOINT: "${OBJECT_STORAGE_ENDPOINT:-https://storage.yandexcloud.net}"
+      OBJECT_STORAGE_REGION: "${OBJECT_STORAGE_REGION:-ru-central1}"
+      OBJECT_STORAGE_BUCKET: "${OBJECT_STORAGE_BUCKET:-dtm-presets}"
+      OBJECT_STORAGE_PREFIX: "${OBJECT_STORAGE_PREFIX:-doc2pdf}"
+      OBJECT_STORAGE_PRESIGN_TTL_SEC: "${OBJECT_STORAGE_PRESIGN_TTL_SEC:-3600}"
     ports:
       - "8080:8080"
-    depends_on:
-      - gotenberg
-
-  gotenberg:
-    image: gotenberg/gotenberg:8
-    ports:
-      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 45s

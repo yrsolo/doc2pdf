@@ -7,7 +7,7 @@ Yandex Serverless Container.
 Legacy office conversion needs a containerized runtime and should stay independently deployable.
 
 ## External dependency
-Gotenberg is the current conversion engine.
+Gotenberg is the current conversion engine and is bundled into the same runtime image as the wrapper service.
 
 ## Current execution model
 The wrapper currently performs a narrow two-step execution:
@@ -15,6 +15,13 @@ The wrapper currently performs a narrow two-step execution:
 2. upload the returned PDF to `target_url`
 
 This keeps source transfer out of the wrapper while preserving the stable backend-facing API.
+
+## Runtime shape
+Local MVP and Serverless Container deployment use the same container shape:
+- one image
+- Gotenberg running on `127.0.0.1:3000`
+- FastAPI wrapper running on `0.0.0.0:8080`
+- Object Storage remains external
 
 ## Configuration
 Required environment variables:
@@ -35,6 +42,7 @@ Optional:
 ## Local proof tooling
 The repo may include dev-only smoke tooling for local conversion proof against Gotenberg.
 That tooling is not part of the stable HTTP API contract and must not be treated as an integration surface for DTM backend.
+It should be run through the container runtime, not through a host Python setup.
 
 Tracked non-secret defaults belong in `config/`.
 Secrets and machine-specific overrides belong in local `.env` files.

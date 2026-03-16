@@ -31,10 +31,13 @@ Preferred production flow:
 1. backend generates presigned GET for source
 2. backend generates presigned PUT for target PDF
 3. backend calls `/convert/doc-to-pdf`
-4. converter asks Gotenberg to fetch and convert the source
+4. converter asks the co-located Gotenberg runtime to fetch and convert the source
 5. converter uploads the resulting PDF to target storage
 6. converter returns `ready|failed`
 7. backend persists preview result
+
+## Runtime packaging
+The wrapper and Gotenberg are packaged into the same container image so the local Docker runtime and Yandex Serverless Container use the same deployment shape.
 
 ## Why separate repo
 - independent Docker image lifecycle

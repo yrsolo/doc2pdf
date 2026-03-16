@@ -7,7 +7,7 @@ This repo contains an independently deployable converter carrier so the main DTM
 
 ## Initial design
 - runtime: Yandex Serverless Container
-- engine: Gotenberg (`gotenberg/gotenberg:8`) as the primary conversion carrier
+- engine: Gotenberg (`gotenberg/gotenberg:8`) bundled into the same runtime image as the wrapper
 - integration style: backend orchestrates conversion jobs and passes presigned Object Storage URLs
 - output: PDF preview artifact written back to Object Storage
 - ownership: this repo owns only conversion concerns, not DTM task/domain logic
@@ -31,24 +31,8 @@ This repo contains an independently deployable converter carrier so the main DTM
 - `config/` contains non-secret settings and checked-in templates.
 - `.env` is for local secrets and machine-specific overrides only.
 
-## Local Proof Workflow
-The public API stays aligned with the future backend integration shape. For early carrier proof on a real legacy file, use a dev-only smoke script instead of adding a temporary multipart endpoint.
-
-Local proof inputs:
-- `example/example.doc` is a temporary local sample only
-- it is not treated as a permanent CI fixture
-- it should later be replaced by a safe anonymized fixture or by a documented local sample drop-in flow
-
-Local proof steps:
-1. Start Gotenberg locally with `docker compose up gotenberg`.
-2. Run `python scripts/smoke_local_conversion.py --input example/example.doc`.
-3. Review the generated PDF under `example/output/`.
-4. Review the captured evidence under `work/roadmap/campaigns/CAM-2026-03-16-GOTENBERG-CONVERTER-MVP-V1/evidence/`.
-
-This smoke flow is for local engine validation only. It does not define the service's stable API.
-
 ## Local MVP Client
-For a fuller local loop you can run the API and open the built-in MVP client page at `/`.
+The local developer flow is container-only. No local Python runtime is required.
 
 The MVP flow is intentionally separate from the stable backend-facing API:
 1. the browser uploads a `.doc` or `.docx` to the wrapper
@@ -63,11 +47,24 @@ Required local configuration for the MVP page:
 - `OBJECT_STORAGE_BUCKET`
 - optional `OBJECT_STORAGE_PREFIX`
 - optional `OBJECT_STORAGE_ENDPOINT`
+- optional `OBJECT_STORAGE_REGION`
+
+Run locally:
+1. `docker compose up --build`
+2. open `http://localhost:8080/`
+3. upload `example/example.doc` or another `.doc/.docx`
+4. verify that the embedded preview opens the resulting PDF from Object Storage
+
+Diagnostics:
+- `docker compose logs -f app`
+
+Optional containerized smoke helper:
+- `docker compose exec app python scripts/smoke_local_conversion.py --input example/example.doc`
 
 ## MVP
 The current MVP stays intentionally thin:
 - a small FastAPI wrapper;
-- a Gotenberg-backed conversion adapter;
+- a Gotenberg-backed conversion adapter inside the same container image;
 - health endpoint;
 - conversion endpoint contract;
 - CI skeleton for image build and Yandex Serverless Container deployment.

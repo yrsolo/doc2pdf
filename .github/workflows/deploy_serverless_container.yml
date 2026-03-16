@@ -41,4 +41,11 @@ jobs:
 
       - name: Deploy revision
         run: |
-          yc serverless container revision deploy             --container-id "${{ secrets.YC_DOC_CONVERTER_CONTAINER_ID }}"             --image "$IMAGE"             --cores 1             --memory 2GB             --execution-timeout 120s             --concurrency 1             --environment PORT=8080,GOTENBERG_BASE_URL=http://localhost:3000,SHARED_TOKEN=${{ secrets.DOC_CONVERTER_SHARED_TOKEN }}
+          yc serverless container revision deploy \
+            --container-id "${{ secrets.YC_DOC_CONVERTER_CONTAINER_ID }}" \
+            --image "$IMAGE" \
+            --cores 1 \
+            --memory 2GB \
+            --execution-timeout 120s \
+            --concurrency 1 \
+            --environment PORT=8080,GOTENBERG_BASE_URL=http://127.0.0.1:3000,SHARED_TOKEN=${{ secrets.DOC_CONVERTER_SHARED_TOKEN }},AWS_ACCESS_KEY_ID=${{ secrets.DOC2PDF_AWS_ACCESS_KEY_ID }},AWS_SECRET_ACCESS_KEY=${{ secrets.DOC2PDF_AWS_SECRET_ACCESS_KEY }},OBJECT_STORAGE_BUCKET=${{ secrets.DOC2PDF_OBJECT_STORAGE_BUCKET }},OBJECT_STORAGE_PREFIX=${{ secrets.DOC2PDF_OBJECT_STORAGE_PREFIX }},OBJECT_STORAGE_ENDPOINT=${{ secrets.DOC2PDF_OBJECT_STORAGE_ENDPOINT }},OBJECT_STORAGE_REGION=${{ secrets.DOC2PDF_OBJECT_STORAGE_REGION }},OBJECT_STORAGE_PRESIGN_TTL_SEC=${{ secrets.DOC2PDF_OBJECT_STORAGE_PRESIGN_TTL_SEC }}
