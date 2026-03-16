@@ -31,6 +31,8 @@ Built-in help page exposed by the running service:
 X-Shared-Token: <token>
 ```
 
+The token value is read from `SHARED_TOKEN` and can optionally be injected from Lockbox when `LOCKBOX_ENABLED=1`.
+
 ### Browser-facing MVP helper endpoints
 The `/mvp/*` routes are intended for manual testing and smoke checks.
 They do not use `X-Shared-Token` in the current MVP.

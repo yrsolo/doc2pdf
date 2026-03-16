@@ -13,8 +13,9 @@
 - `YC_DOC_CONVERTER_CONTAINER_ID`
 - `YC_DOC_CONVERTER_IMAGE_NAME`
 - `DOC_CONVERTER_SHARED_TOKEN`
-- `DOC2PDF_AWS_ACCESS_KEY_ID`
-- `DOC2PDF_AWS_SECRET_ACCESS_KEY`
+- `DOC2PDF_AWS_ACCESS_KEY_ID` (optional if using Lockbox)
+- `DOC2PDF_AWS_SECRET_ACCESS_KEY` (optional if using Lockbox)
+- `DOC2PDF_LOCKBOX_ID` (optional, enables Lockbox for AWS creds + shared token)
 - `DOC2PDF_OBJECT_STORAGE_BUCKET`
 - `DOC2PDF_OBJECT_STORAGE_PREFIX`
 - `DOC2PDF_OBJECT_STORAGE_ENDPOINT`
@@ -28,8 +29,9 @@
 4. Set env vars:
    - `PORT=8080`
    - `GOTENBERG_BASE_URL=http://127.0.0.1:3000`
-   - `SHARED_TOKEN`
-   - Object Storage credentials and bucket settings
+   - `SHARED_TOKEN` (or enable Lockbox)
+   - Object Storage credentials and bucket settings (or enable Lockbox)
+   - `LOCKBOX_ENABLED=1` and `LOCKBOX_ID=<secret id>` if using Lockbox
 
 ## Cloud endpoint shape
 - Serverless Container URL: `https://<your-container-id>.containers.yandexcloud.net/`

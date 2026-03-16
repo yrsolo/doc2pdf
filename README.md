@@ -81,6 +81,7 @@ Required local configuration for the MVP page:
 - optional `OBJECT_STORAGE_PREFIX`
 - optional `OBJECT_STORAGE_ENDPOINT`
 - optional `OBJECT_STORAGE_REGION`
+ - optional `LOCKBOX_ENABLED=1` + `LOCKBOX_ID` to fetch AWS credentials and `SHARED_TOKEN` from Yandex Lockbox
 
 Run locally:
 1. `docker compose up --build`
