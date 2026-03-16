@@ -21,9 +21,16 @@ Required environment variables:
 - `PORT`
 - `GOTENBERG_BASE_URL`
 - `SHARED_TOKEN`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `OBJECT_STORAGE_BUCKET`
 
 Optional:
 - `GOTENBERG_TIMEOUT_SEC`
+- `OBJECT_STORAGE_ENDPOINT`
+- `OBJECT_STORAGE_REGION`
+- `OBJECT_STORAGE_PREFIX`
+- `OBJECT_STORAGE_PRESIGN_TTL_SEC`
 
 ## Local proof tooling
 The repo may include dev-only smoke tooling for local conversion proof against Gotenberg.

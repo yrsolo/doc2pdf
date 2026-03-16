@@ -50,8 +50,10 @@ def test_gotenberg_client_converts_and_uploads_pdf():
 
     assert response.status == "ready"
     assert response.preview_size_bytes == len(b"%PDF-1.7 fake")
-    assert 'downloadFrom=%5B%7B%22url%22%3A+%22https%3A%2F%2Fstorage.local%2Fsource.doc%22%7D%5D' in captured["convert_body"]
-    assert "outputFilename=preview.pdf" in captured["convert_body"]
+    assert 'name="downloadFrom"' in captured["convert_body"]
+    assert '[{"url": "https://storage.local/source.doc"}]' in captured["convert_body"]
+    assert 'name="outputFilename"' in captured["convert_body"]
+    assert "preview.pdf" in captured["convert_body"]
     assert captured["uploaded_pdf"] == b"%PDF-1.7 fake"
     assert captured["request_ids"] == ["req-123", "req-123"]
 

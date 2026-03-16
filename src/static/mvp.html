@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>doc2pdf MVP</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #11131a;
+      --panel: #181c25;
+      --panel-strong: #1e2430;
+      --border: #2c3444;
+      --text: #eef2f8;
+      --muted: #9aa6ba;
+      --accent: #7dd3fc;
+      --accent-strong: #38bdf8;
+      --danger: #fb7185;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.10), transparent 24%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.05;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(125, 211, 252, 0.08);
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      color: var(--accent);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+
+    .upload-box {
+      margin-top: 20px;
+      padding: 18px;
+      border: 1px dashed rgba(125, 211, 252, 0.35);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    input[type="file"] {
+      width: 100%;
+      margin-bottom: 14px;
+      color: var(--muted);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #07121a;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    .meta {
+      margin-top: 16px;
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .preview {
+      display: flex;
+      flex-direction: column;
+      min-height: 760px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .status {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status.error {
+      color: var(--danger);
+      background: rgba(251, 113, 133, 0.08);
+    }
+
+    iframe {
+      width: 100%;
+      flex: 1;
+      min-height: 680px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #0c0f15;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 680px;
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+    }
+
+    .log {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 84px;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <section class="card panel">
+        <div class="badge">Local MVP • Yandex Object Storage • Gotenberg</div>
+        <h1>doc2pdf test client</h1>
+        <p>Загрузи `.doc` или `.docx`, сервис положит исходник и PDF в Object Storage, затем покажет готовый preview прямо на странице.</p>
+
+        <div class="upload-box">
+          <input id="fileInput" type="file" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+          <button id="uploadButton">Загрузить и конвертировать</button>
+          <div class="meta">
+            <div id="fileMeta">Файл не выбран</div>
+            <div id="resultMeta">Preview еще не создан</div>
+          </div>
+        </div>
+
+        <div id="log" class="log">Готов к локальному тесту.</div>
+      </section>
+
+      <section class="card panel preview">
+        <div class="preview-header">
+          <div>
+            <h2 style="margin:0 0 6px;font-size:24px;">PDF preview</h2>
+            <p>После успешной конвертации PDF откроется ниже.</p>
+          </div>
+          <div id="status" class="status">idle</div>
+        </div>
+        <div id="previewContainer" class="empty">Пока пусто. Выбери документ и запусти конвертацию.</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const uploadButton = document.getElementById("uploadButton");
+    const statusEl = document.getElementById("status");
+    const fileMeta = document.getElementById("fileMeta");
+    const resultMeta = document.getElementById("resultMeta");
+    const previewContainer = document.getElementById("previewContainer");
+    const logEl = document.getElementById("log");
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files?.[0];
+      fileMeta.textContent = file
+        ? `Выбран: ${file.name} • ${Math.round(file.size / 1024)} KB`
+        : "Файл не выбран";
+    });
+
+    uploadButton.addEventListener("click", async () => {
+      const file = fileInput.files?.[0];
+      if (!file) {
+        setError("Сначала выбери .doc или .docx файл.");
+        return;
+      }
+
+      uploadButton.disabled = true;
+      setStatus("uploading");
+      logEl.textContent = "Загрузка исходника и запуск конвертации...";
+      resultMeta.textContent = "В процессе...";
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("/mvp/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const payload = await response.json();
+        if (!response.ok || payload.status !== "ready") {
+          const message = payload.error_message || payload.detail || "Конвертация не удалась";
+          throw new Error(message);
+        }
+
+        setStatus("ready");
+        resultMeta.textContent = `PDF готов: ${Math.round((payload.preview_size_bytes || 0) / 1024)} KB`;
+        logEl.textContent = JSON.stringify(payload, null, 2);
+        previewContainer.innerHTML = `<iframe title="PDF preview" src="${payload.preview_url}"></iframe>`;
+      } catch (error) {
+        setError(error.message || String(error));
+      } finally {
+        uploadButton.disabled = false;
+      }
+    });
+
+    function setStatus(text) {
+      statusEl.textContent = text;
+      statusEl.classList.remove("error");
+    }
+
+    function setError(message) {
+      statusEl.textContent = "failed";
+      statusEl.classList.add("error");
+      logEl.textContent = message;
+      resultMeta.textContent = "Ошибка конвертации";
+    }
+  </script>
+</body>
+</html>

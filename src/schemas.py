@@ -20,3 +20,15 @@ class ConversionResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     gotenberg_base_url: str
+
+
+class MvpUploadResponse(BaseModel):
+    status: Literal["ready", "failed"]
+    attachment_id: str
+    filename: str
+    preview_url: Optional[HttpUrl] = None
+    preview_size_bytes: Optional[int] = None
+    source_object_key: Optional[str] = None
+    preview_object_key: Optional[str] = None
+    error_code: Optional[str] = None
+    error_message: Optional[str] = None

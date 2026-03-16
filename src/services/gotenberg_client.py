@@ -61,9 +61,9 @@ class GotenbergClient:
         ) as client:
             response = await client.post(
                 f"{self.base_url}/forms/libreoffice/convert",
-                data={
-                    "downloadFrom": payload,
-                    "outputFilename": request.target_filename,
+                files={
+                    "downloadFrom": (None, payload),
+                    "outputFilename": (None, request.target_filename),
                 },
                 headers=headers,
             )

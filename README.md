@@ -47,6 +47,23 @@ Local proof steps:
 
 This smoke flow is for local engine validation only. It does not define the service's stable API.
 
+## Local MVP Client
+For a fuller local loop you can run the API and open the built-in MVP client page at `/`.
+
+The MVP flow is intentionally separate from the stable backend-facing API:
+1. the browser uploads a `.doc` or `.docx` to the wrapper
+2. the wrapper stores the source file in Yandex Object Storage
+3. the wrapper generates presigned source/target URLs
+4. the stable conversion service converts via Gotenberg and uploads the PDF
+5. the page opens the resulting PDF in an embedded preview frame
+
+Required local configuration for the MVP page:
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `OBJECT_STORAGE_BUCKET`
+- optional `OBJECT_STORAGE_PREFIX`
+- optional `OBJECT_STORAGE_ENDPOINT`
+
 ## MVP
 The current MVP stays intentionally thin:
 - a small FastAPI wrapper;

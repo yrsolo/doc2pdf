@@ -60,3 +60,7 @@ The current implementation path is:
 3. the wrapper uploads the PDF to `target_url`
 
 This avoids introducing a temporary multipart upload contract while keeping the service narrow.
+
+## Local MVP helper
+The repo may additionally expose a local-only MVP helper flow for manual testing in a browser.
+That helper may upload a local file to Object Storage and then call the stable conversion service internally, but it is not the public integration contract for DTM backend.
