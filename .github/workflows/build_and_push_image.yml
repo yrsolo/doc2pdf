@@ -1,0 +1,47 @@
+name: build-and-push-image
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Write YC credentials
+        run: |
+          echo '${{ secrets.YC_SA_JSON_CREDENTIALS }}' > yc-key.json
+
+      - name: Install YC CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
+
+      - name: Auth YC CLI
+        run: |
+          yc config profile create ci || true
+          yc config set service-account-key yc-key.json
+          yc config set folder-id "${{ secrets.YC_FOLDER_ID }}"
+
+      - name: Configure Docker for Yandex Container Registry
+        run: |
+          yc container registry configure-docker
+
+      - name: Build image
+        run: |
+          IMAGE="cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ secrets.YC_DOC_CONVERTER_IMAGE_NAME }}:${{ github.sha }}"
+          docker build -t "$IMAGE" .
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      - name: Push image
+        run: |
+          docker push "$IMAGE"
+
+      - name: Save image ref
+        run: echo "Built and pushed $IMAGE"
