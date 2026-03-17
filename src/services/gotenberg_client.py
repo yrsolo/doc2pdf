@@ -71,13 +71,6 @@ class GotenbergClient:
             return response.content
 
     async def _upload_pdf(self, request: ConversionRequest, pdf_bytes: bytes) -> None:
-        headers = {
-            "Content-Type": "application/pdf",
-            "Content-Disposition": f'inline; filename="{request.target_filename}"',
-        }
-        if request.request_id:
-            headers["X-Request-Id"] = request.request_id
-
         async with httpx.AsyncClient(
             timeout=self.timeout_sec,
             trust_env=self.trust_env,
@@ -85,7 +78,7 @@ class GotenbergClient:
             response = await client.put(
                 str(request.target_url),
                 content=pdf_bytes,
-                headers=headers,
+                headers={},
             )
             response.raise_for_status()
 

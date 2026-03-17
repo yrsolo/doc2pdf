@@ -108,11 +108,7 @@ class MvpService:
         attachment_id = payload["attachment_id"]
         target_filename = payload["target_filename"]
         source_url = self.object_storage_service.generate_get_url(source_object_key)
-        target_url = self.object_storage_service.generate_put_url(
-            object_key=preview_object_key,
-            content_type="application/pdf",
-            content_disposition=f'inline; filename="{target_filename}"',
-        )
+        target_url = self.object_storage_service.generate_put_url(object_key=preview_object_key)
         preview_url = self.object_storage_service.generate_get_url(preview_object_key)
 
         conversion_response = await self.conversion_service.convert_doc_to_pdf(

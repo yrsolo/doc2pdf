@@ -55,7 +55,7 @@ def test_gotenberg_client_converts_and_uploads_pdf():
     assert 'name="outputFilename"' in captured["convert_body"]
     assert "preview.pdf" in captured["convert_body"]
     assert captured["uploaded_pdf"] == b"%PDF-1.7 fake"
-    assert captured["request_ids"] == ["req-123", "req-123"]
+    assert captured["request_ids"] == ["req-123", None]
 
 
 def test_gotenberg_client_normalizes_upstream_failures():

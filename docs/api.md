@@ -152,7 +152,7 @@ Success response:
 Meaning:
 
 - `upload_url` - presigned PUT URL for direct browser upload to Object Storage.
-- `upload_headers` - headers that must be sent with the PUT request.
+- `upload_headers` - headers that must be sent with the PUT request (currently empty).
 - `preview_url` - future presigned GET URL for the resulting PDF.
 - `conversion_token` - opaque short-lived token later sent to `/mvp/convert`.
 
@@ -261,3 +261,8 @@ Validation and route-level errors may also return regular FastAPI HTTP errors su
 - Hosted upload is the preferred browser flow.
 - Direct upload requires Object Storage CORS to allow browser `PUT` and `GET`.
 - When testing from `example/test-client.html`, the page may be opened directly from disk and pointed at either local or cloud base URL.
+
+## Notes for presigned PUT targets
+
+When uploading the PDF to a presigned `target_url`, the converter sends **no extra headers**.
+This avoids signature mismatches when the presigned URL does not include additional headers.
