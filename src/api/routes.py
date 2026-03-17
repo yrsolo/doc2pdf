@@ -26,8 +26,12 @@ service = ConversionService(
 static_dir = Path(__file__).resolve().parent.parent / "static"
 
 def require_token(x_shared_token: str | None = Header(default=None)) -> None:
-    if settings.shared_token and x_shared_token != settings.shared_token:
-        raise HTTPException(status_code=401, detail="unauthorized")
+    if not settings.shared_token:
+        return
+    if x_shared_token is None:
+        raise HTTPException(status_code=401, detail="missing X-Shared-Token")
+    if x_shared_token != settings.shared_token:
+        raise HTTPException(status_code=401, detail="invalid X-Shared-Token")
 
 
 def build_mvp_service() -> MvpService:
@@ -75,6 +79,9 @@ async def mvp_prepare_upload(request: MvpPrepareUploadRequest) -> MvpPrepareUplo
 
 @router.post("/mvp/convert", response_model=MvpUploadResponse, include_in_schema=False)
 async def mvp_convert(request: MvpConvertRequest) -> MvpUploadResponse:
+    if not request.conversion_token.strip():
+        raise HTTPException(status_code=400, detail="conversion_token is required")
+
     try:
         mvp_service = build_mvp_service()
     except ValueError as exc:

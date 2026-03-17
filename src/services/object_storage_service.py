@@ -14,7 +14,10 @@ from src.config import settings
 class ObjectStorageService:
     def __init__(self) -> None:
         if not settings.aws_access_key_id or not settings.aws_secret_access_key:
-            raise ValueError("Object Storage credentials are not configured.")
+            raise ValueError(
+                "Object Storage credentials are not configured. "
+                "Set AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY or enable Lockbox."
+            )
 
         self.bucket = settings.object_storage_bucket
         self.prefix = settings.object_storage_prefix.strip("/")

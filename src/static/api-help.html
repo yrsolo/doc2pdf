@@ -202,6 +202,17 @@
         <li>Client opens <code>preview_url</code>.</li>
       </ol>
     </section>
+
+    <section class="card">
+      <h2>Common error details</h2>
+      <ul>
+        <li><code>401</code> missing or invalid <code>X-Shared-Token</code> for <code>/convert/doc-to-pdf</code>.</li>
+        <li><code>400</code> <code>filename is required</code> for <code>/mvp/prepare-upload</code>.</li>
+        <li><code>400</code> <code>conversion_token is required</code> for <code>/mvp/convert</code>.</li>
+        <li><code>400</code> invalid/expired conversion token (<code>Invalid conversion token format/signature</code> or <code>Conversion token expired.</code>).</li>
+        <li><code>500</code> missing storage credentials when Lockbox/env is not configured.</li>
+      </ul>
+    </section>
   </div>
 </body>
 </html>

@@ -233,6 +233,23 @@ Stable and MVP conversion responses normalize failures into:
 - `network_error`
 - `internal_error`
 
+## Common HTTP errors (detailed)
+
+`401 Unauthorized`
+- `missing X-Shared-Token` when the header is not provided
+- `invalid X-Shared-Token` when the header is present but wrong
+
+`400 Bad Request`
+- `filename is required` when `/mvp/prepare-upload` receives an empty filename
+- `conversion_token is required` when `/mvp/convert` receives an empty token
+- `Invalid conversion token format.` for malformed hosted-upload tokens
+- `Invalid conversion token signature.` when token signature does not match
+- `Conversion token expired.` when token TTL has passed
+
+`500 Internal Server Error`
+- `Object Storage credentials are not configured. Set AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY or enable Lockbox.`
+  when the wrapper cannot access storage credentials for presigned URLs
+
 Validation and route-level errors may also return regular FastAPI HTTP errors such as:
 
 - `400` for invalid client input
